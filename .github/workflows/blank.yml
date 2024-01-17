@@ -13,11 +13,16 @@ jobs:
         node-version: [12.13.0]
 
     steps:
-    - name: Checkout PR
+    - name: Get PR details
+      id: pr-details
       run: |
-        git init
-        git fetch --depth=1 origin "refs/pull/${{ github.event.issue.number }}/head"
-        git checkout -b pr-${{ github.event.issue.number }} FETCH_HEAD
+        echo "::set-output name=pr_number::$(echo $GITHUB_REF | awk 'BEGIN { FS = "/" } ; { print $3 }')"
+        echo "::set-output name=pr_sha::$(curl -s -H "Authorization: Bearer ${{ secrets.ABGITHUB_TOKEN }}" "https://api.github.com/repos/${GITHUB_REPOSITORY}/pulls/$(echo $GITHUB_REF | awk 'BEGIN { FS = "/" } ; { print $3 }')" | jq -r .head.sha)"
+        
+    - name: Checkout PR
+      uses: actions/checkout@v2
+      with:
+        ref: "pull/${{ steps.pr-details.outputs.pr_number}}/head"
         
    
 
