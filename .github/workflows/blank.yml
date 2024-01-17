@@ -12,14 +12,18 @@ jobs:
       matrix:
         node-version: [12.13.0]
 
+
     steps:
-    - name: Checkout PR
-      run: |
-        git init
-        git fetch --depth=1 origin "refs/pull/${{ github.event.issue.number }}/head"
-        git checkout -b pr-${{ github.event.issue.number }} FETCH_HEAD
+      - name: Get PR branch
+        uses: xt0rted/pull-request-comment-branch@v1
+        id: comment-branch
+
+      - name: Checkout PR branch
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ steps.comment-branch.outputs.head_ref }}
         
    
 
-    - name: Print variable from Doppler 
-      run: ls -la
+      - name: Print variable from Doppler 
+        run: ls -la
