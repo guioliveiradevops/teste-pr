@@ -14,9 +14,10 @@ jobs:
 
     steps:
     - name: Checkout PR
-      uses: actions/checkout@v2
-      with:
-        ref: ${{ github.event.issue.pull_request.head.sha }}
+      run: |
+        git init
+        git fetch --depth=1 origin "refs/pull/${{ github.event.issue.number }}/head"
+        git checkout -b pr-${{ github.event.issue.number }} FETCH_HEAD
         
    
 
